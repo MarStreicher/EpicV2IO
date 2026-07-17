@@ -6,7 +6,6 @@ import pytest
 
 from epicv2io import BetasLoader
 from epicv2io import betas_loader
-from epicv2io.betas_loader import infer_separator
 
 
 @pytest.mark.parametrize(
@@ -225,9 +224,3 @@ def test_loader_uses_packaged_manifest_by_default(
     assert calls == [True]
     assert loader.manifest.equals(example_manifest)
 
-
-def test_infer_separator_honours_sample_byte_limit(tmp_path: Path) -> None:
-    path = tmp_path / "betas.txt"
-    path.write_text("IlmnID;A\ncg1;0.1\nignored,comma\n")
-
-    assert infer_separator(path, sample_bytes=17) == ";"

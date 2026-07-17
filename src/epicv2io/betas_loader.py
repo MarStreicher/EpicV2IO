@@ -1,9 +1,9 @@
 import pandas as pd
-import csv
 
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, cast
 
+from .io import infer_separator
 from .manifest import load_peters_manifest
 
 _TRUTHY_MANIFEST_FLAGS = frozenset({"Y", "TRUE", "1"})
@@ -43,13 +43,6 @@ NON_SAMPLE_COLUMNS = [
     "END_HG38",
     "STRAND_HG38",
 ]
-
-
-def infer_separator(path: Path, sample_bytes: int = 64_384) -> str:
-    """Infer a comma, tab, or semicolon delimiter from a text file."""
-    with path.open("r", encoding="utf-8", errors="replace") as f:
-        sample = f.read(sample_bytes)
-    return csv.Sniffer().sniff(sample, delimiters=",\t;").delimiter
 
 
 class BetasLoader:

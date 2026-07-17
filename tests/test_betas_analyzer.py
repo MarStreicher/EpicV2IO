@@ -19,11 +19,20 @@ def test_init_exits_with_error_when_betas_file_is_missing(
     assert capsys.readouterr().err == f"Error: betas file not found: {missing_path}\n"
 
 
-def test_get_header_and_sample_count_reads_tab_delimited_header(
-    tmp_path: Path,
+@pytest.mark.parametrize(
+    "content",
+    [
+        "IlmnID\tSample_A\tSample_B\ncg1\t0.1\t0.2\n",
+        "IlmnID;Sample_A;Sample_B\ncg1;0.1;0.2\n",
+        "IlmnID,Sample_A,Sample_B\ncg1,0.1,0.2\n",
+    ],
+    ids=["tab", "semicolon", "comma"],
+)
+def test_get_header_and_sample_count_infers_delimiter(
+    tmp_path: Path, content: str
 ) -> None:
-    path = tmp_path / "betas.tsv"
-    path.write_text("IlmnID\tSample_A\tSample_B\ncg1\t0.1\t0.2\n")
+    path = tmp_path / "betas.txt"
+    path.write_text(content)
 
     assert BetasAnalyzer(path).get_header_and_sample_count() == (
         ["IlmnID", "Sample_A", "Sample_B"],
