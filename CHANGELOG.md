@@ -13,14 +13,3 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Packaging metadata
-
-## [1.0.1] - 2026-07-17
-
-### Added
-- Nothing
-
-### Changed
-- Change package name in toml
-
-### Fixed
-- Packaging metadata
