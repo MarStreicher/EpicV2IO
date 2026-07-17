@@ -1,0 +1,42 @@
+Third-party annotation data — Peters et al. EPICv2 manifest (derived subset)
+==============================================================================
+
+File
+----
+src/epicv2io/resources/peters_epicv2_manifest.parquet
+
+This file is NOT original EpicV2IO content. It is a derived column subset of
+the extended Illumina MethylationEPIC v2.0 probe manifest published by
+Peters et al. (2024).
+
+Upstream sources
+----------------
+1. Peters TJ, Meyer B, Ryan L, Achinger-Kawecka J, Song J, Campbell EM,
+   Qu W, Nair S, Loi-Luu P, Stricker P, Lim E, Stirzaker C, Clark SJ,
+   Pidsley R (2024). Characterisation and reproducibility of the
+   HumanMethylationEPIC v2.0 BeadChip for DNA methylation profiling.
+   BMC Genomics 25:251. https://doi.org/10.1186/s12864-024-10027-5
+
+2. Article supplementary material: Additional file 4 (CSV).
+   https://link.springer.com/article/10.1186/s12864-024-10027-5
+
+3. Bioconductor annotation package EPICv2manifest / AnnotationHub AH116484
+   (Artistic License 2.0). Rebuild script:
+   scripts/build_peters_manifest_parquet.R
+
+Licence of the article / open materials
+---------------------------------------
+The BMC Genomics article is licensed under Creative Commons Attribution 4.0
+International (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+EpicV2IO distributes a reduced Parquet representation (selected columns only)
+to shrink install size and speed loading. That is an adaptation under CC BY 4.0;
+attribution is required.
+
+Columns retained
+----------------
+IlmnID, CHR, MismatchPos, MissingPos, CH_BLAT, CH_WGBS_evidence
+
+The EpicV2IO software licence (see LICENSE) does not replace the attribution
+obligations for this third-party annotation resource.

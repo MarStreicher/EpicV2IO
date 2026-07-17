@@ -16,11 +16,17 @@ EpicV2IO loads beta files, retains cg probes, optionally applies QC exclusions f
 - Ship a compact Peters et al. EPICv2 manifest as Parquet
 - Optional QC exclusions via manifest flags (mismatch / missing position, cross-hybridisation, sex / mitochondrial chromosomes)
 - Parse EPICv2 `cg…_…` probe identifiers into site, design, and replicate components
-- Summarise probe-type and chromosome composition of a betas file
+- Summarise probe-type and chromosome composition of a betas file (delimiter auto-detected)
 
 ---
 
 ## Installation
+
+### From PyPI
+
+```bash
+pip install epicv2io
+```
 
 ### From GitHub
 
@@ -44,13 +50,13 @@ conda activate env_epicv2io
 
 Dependencies are installed automatically with `pip`.
 
----
 
 ## Data and Annotation Resources
 
-EpicV2IO uses a compact Parquet representation of the supplementary EPICv2 manifest published by Peters et al. Only the columns required for duplicate-probe filtering and annotation are retained.
-
-The package distributes a preprocessed Parquet file to reduce installation size and improve loading performance.
+EpicV2IO ships a compact Parquet **derived subset** of the extended EPICv2 probe
+manifest from Peters et al. (2024). Only the columns required for QC filtering
+and annotation are retained (see table below). This is an adaptation of
+third-party open materials, not original EpicV2IO content.
 
 | Column               | Role                                                                 |
 | -------------------- | -------------------------------------------------------------------- |
@@ -61,7 +67,15 @@ The package distributes a preprocessed Parquet file to reduce installation size 
 | `CH_BLAT`          | Cross-hybridisation evidence (BLAT)                                  |
 | `CH_WGBS_evidence` | Cross-hybridisation evidence (WGBS)                                  |
 
-Source in AnnotationHub: **AH116484** (Peters EPICv2 manifest). The rebuild script is `scripts/build_peters_manifest_parquet.R`.
+**Provenance**
+
+- Paper (CC BY 4.0): Peters et al., *BMC Genomics* (2024) 25:251 —  
+  https://doi.org/10.1186/s12864-024-10027-5  
+- Supplementary CSV: **Additional file 4** of that article  
+- Bioconductor: [`EPICv2manifest`](https://bioconductor.org/packages/release/data/annotation/html/EPICv2manifest.html) / AnnotationHub **AH116484** (Artistic-2.0)
+
+The rebuild script is `scripts/build_peters_manifest_parquet.R`. Full attribution
+text is in [`NOTICE`](NOTICE) and `src/epicv2io/resources/README.md`.
 
 ### Purpose
 
@@ -255,7 +269,7 @@ print(CgProbeId.parse("rs12345678"))  # None
 
 Quick inventory of a betas file: sample/column counts, probe-type mix from ID prefixes (`cg`, `ch`, `rs`, `nv`, `control`), and chromosome distribution via the Peters manifest. Useful before a full load.
 
-**Note:** the analyzer currently expects a **tab**-delimited betas file.
+Delimiter handling matches `BetasLoader`: comma, tab, or semicolon are auto-detected via `epicv2io.io.infer_separator`.
 
 ### Example
 
@@ -263,7 +277,7 @@ Quick inventory of a betas file: sample/column counts, probe-type mix from ID pr
 from pathlib import Path
 from epicv2io import BetasAnalyzer
 
-BetasAnalyzer(Path("betas.txt")).summarise()
+BetasAnalyzer(Path("betas.csv")).summarise()
 ```
 
 Example result:
@@ -311,12 +325,18 @@ If you use EpicV2IO in published work, please cite:
 
 > Streicher M. EpicV2IO: I/O library for reading Illumina MethylationEPIC v2 BeadChip array files. GitHub repository. 2026.
 
-Please also cite the EPICv2 annotation resource:
+If you use the shipped probe annotation (or any analysis that relies on it), please cite the Peters et al. EPICv2 manifest paper (CC BY 4.0):
 
-> Peters TJ, Buckberry S, Hogg K, et al. Characterisation and recommendations for analysis of the Illumina MethylationEPIC v2 BeadChip. *Clinical Epigenetics*. 2024.
+> Peters TJ, Meyer B, Ryan L, Achinger-Kawecka J, Song J, Campbell EM, Qu W, Nair S, Loi-Luu P, Stricker P, Lim E, Stirzaker C, Clark SJ, Pidsley R. Characterisation and reproducibility of the HumanMethylationEPIC v2.0 BeadChip for DNA methylation profiling. *BMC Genomics*. 2024;25:251. https://doi.org/10.1186/s12864-024-10027-5
+
+Optionally also acknowledge the Bioconductor distribution used to build the Parquet subset:
+
+> Peters TJ, Pidsley R. *EPICv2manifest*: Illumina Infinium MethylationEPIC v2.0 extended manifest. Bioconductor annotation package (AnnotationHub AH116484).
 
 ---
 
 ## License
 
-MIT License.
+BSD 3-Clause License (see [`LICENSE`](LICENSE)) covers **this software only**.
+
+The packaged Peters et al. manifest subset is third-party open material under the article’s **CC BY 4.0** terms (and, for the AnnotationHub build path, Bioconductor **Artistic-2.0**). Attribution requirements for that data are described in [`NOTICE`](NOTICE); they are separate from the EpicV2IO software licence.
