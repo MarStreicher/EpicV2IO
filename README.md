@@ -1,5 +1,5 @@
 <p align="right">
-  <img src="assets/epicv2io_logo.png" alt="epicv2io logo" width="250">
+  <img src="https://raw.githubusercontent.com/MarStreicher/EpicV2IO/main/assets/epicv2io_logo.png" alt="epicv2io logo" width="250">
 </p>
 
 # EpicV2IO
