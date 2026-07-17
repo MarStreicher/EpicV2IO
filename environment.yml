@@ -1,0 +1,16 @@
+name: env_epicv2io
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.9
+  - pandas>=1.5
+  - pyarrow>=10
+  - openpyxl
+  - pip
+  # Dev / test tools
+  - pytest>=7
+  - pytest-cov>=4
+  - black
+  - ruff
+  - pip:
+      - -e .
