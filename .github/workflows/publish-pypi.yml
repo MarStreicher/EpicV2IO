@@ -1,11 +1,9 @@
 name: Publish to TestPyPI
 
 on:
-  # Manual run from the Actions tab (recommended for TestPyPI dry-runs).
   workflow_dispatch:
-  # Optional: also publish when you create a GitHub Release.
   release:
-    types: [published]
+    types: []
 
 permissions:
   contents: read
@@ -14,8 +12,8 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
-      url: https://test.pypi.org/project/epicv2io/
+      name: pypi
+      url: https://pypi.org/project/epicv2io/
     permissions:
       id-token: write
 
@@ -37,5 +35,5 @@ jobs:
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://test.pypi.org/legacy/
+          repository-url: https://upload.pypi.org/legacy/
           skip-existing: true

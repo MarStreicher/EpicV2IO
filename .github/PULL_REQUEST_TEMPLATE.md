@@ -18,6 +18,7 @@
 - [ ] `pyproject.toml` / `CITATION.cff` version bumped if this is a release
 - [ ] README / docs updated if behaviour or install instructions changed
 - [ ] No secrets, large raw data, or coverage artefacts included
+- [ ] Appended Changelog.md
 
 ## Release notes (for `develop` → `main` only)
 

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import sys
 
+from .io import infer_separator
 from .manifest import load_peters_manifest
 
 _PROBE_TYPE_PREFIXES = ("cg", "ch", "rs", "nv", "control")
@@ -42,7 +43,8 @@ class BetasAnalyzer:
             sys.exit(1)
 
     def get_header_and_sample_count(self) -> tuple[list[str], int]:
-        empty_frame = pd.read_csv(self._betas_path, sep="\t", nrows=0)
+        sep = infer_separator(self._betas_path)
+        empty_frame = pd.read_csv(self._betas_path, sep=sep, nrows=0)
         header = empty_frame.columns.tolist()
         return (header, len(header))
 
@@ -58,9 +60,10 @@ class BetasAnalyzer:
         print(f"Number of sample columns: {n_columns - 1}")
         print()
 
+        sep = infer_separator(self._betas_path)
         probes = pd.read_csv(
             self._betas_path,
-            sep="\t",
+            sep=sep,
             usecols=[0],
             index_col=0,
             dtype=str,
@@ -113,8 +116,3 @@ class BetasAnalyzer:
         print("-" * 40)
         print(f"  {'total':10} {n_rows:>10,}  (100.00%)")
         print()
-
-
-if __name__ == "__main__":
-    analyzer = BetasAnalyzer(Path("data_20260225/20260225_betas.txt"))
-    analyzer.summarise()

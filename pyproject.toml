@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "epicv2io"
-version = "0.1.0"
+version = "1.0.0"
 description = "EPICv2 beta value loader and manifest utilities."
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
-license-files = ["LICENSE"]
+license = "BSD-3-Clause"
+license-files = ["LICENSE", "NOTICE"]
 authors = [
   {name = "Marleen Streicher", email = "marleenstreicher@icloud.com"}
 ]
@@ -45,7 +45,7 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-epicv2io = ["resources/*.parquet"]
+epicv2io = ["resources/*.parquet", "resources/README.md"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
