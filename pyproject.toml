@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "epicv2io"
 version = "0.1.0"
 description = "EPICv2 beta value loader and manifest utilities."
+readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
 license-files = ["LICENSE"]
