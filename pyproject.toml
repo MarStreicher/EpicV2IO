@@ -3,7 +3,7 @@ requires = ["setuptools>=77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "epicv2io"
+name = "epicv2-io"
 version = "1.0.0"
 description = "EPICv2 beta value loader and manifest utilities."
 readme = "README.md"
