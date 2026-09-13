@@ -11,11 +11,10 @@ from epicv2io import betas_loader
 @pytest.mark.parametrize(
     ("delimiter", "suffix"),
     [
-        (";", ".csv"),
-        ("\t", ".tsv"),
         (",", ".csv"),
+        ("\t", ".txt"),
     ],
-    ids=["semicolon", "tab", "comma"],
+    ids=["comma_csv", "tab_txt"],
 )
 def test_init_infers_delimiter(
     delimiter: str,
@@ -24,10 +23,10 @@ def test_init_infers_delimiter(
     example_manifest: pd.DataFrame,
     tmp_path: Path,
 ) -> None:
-    """The loader should infer the delimiter and preserve probe IDs as its index."""
+    """The loader should choose the delimiter from the file extension."""
     input_path = tmp_path / f"example_betas{suffix}"
 
-    contents = example_betas_csv.read_text().replace(";", delimiter)
+    contents = example_betas_csv.read_text().replace(",", delimiter)
     input_path.write_text(contents)
 
     loader = BetasLoader(input_path, manifest=example_manifest)
