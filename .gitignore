@@ -219,3 +219,5 @@ __marimo__/
 
 .coverage
 coverage.xml
+example*
+.vscode/settings.json

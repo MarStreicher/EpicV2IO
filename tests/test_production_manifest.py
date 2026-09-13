@@ -60,7 +60,7 @@ def test_loader_uses_packaged_manifest_for_exclusions(
     )
     mismatch_id = manifest.loc[cg_rows & mismatch_rows, "IlmnID"].iloc[0]
     retained_id = manifest.loc[cg_rows & ~mismatch_rows, "IlmnID"].iloc[0]
-    path = tmp_path / "production_manifest_smoke.tsv"
+    path = tmp_path / "production_manifest_smoke.txt"
     pd.DataFrame(
         {"Sample_A": [0.1, 0.2]},
         index=pd.Index([mismatch_id, retained_id], name="IlmnID"),
