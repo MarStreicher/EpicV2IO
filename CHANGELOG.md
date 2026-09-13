@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- Delimiter is taken from the file extension (`.csv` → comma, `.txt` → tab); content sniffing and semicolon support removed
+- `BetasLoader` loads betas and the Peters manifest lazily (only when needed)
+
 ## [1.0.0] - 2026-07-17
 
 ### Added
