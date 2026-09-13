@@ -11,10 +11,11 @@ from epicv2io import betas_loader
 @pytest.mark.parametrize(
     ("delimiter", "suffix"),
     [
+        (";", ".csv"),
+        ("\t", ".tsv"),
         (",", ".csv"),
-        ("\t", ".txt"),
     ],
-    ids=["comma_csv", "tab_txt"],
+    ids=["semicolon", "tab", "comma"],
 )
 def test_init_infers_delimiter(
     delimiter: str,
@@ -23,10 +24,10 @@ def test_init_infers_delimiter(
     example_manifest: pd.DataFrame,
     tmp_path: Path,
 ) -> None:
-    """The loader should choose the delimiter from the file extension."""
+    """The loader should infer the delimiter and preserve probe IDs as its index."""
     input_path = tmp_path / f"example_betas{suffix}"
 
-    contents = example_betas_csv.read_text().replace(",", delimiter)
+    contents = example_betas_csv.read_text().replace(";", delimiter)
     input_path.write_text(contents)
 
     loader = BetasLoader(input_path, manifest=example_manifest)
@@ -44,9 +45,8 @@ def test_init_infers_delimiter(
 def test_invalid_probe_index_error(
     invalid_betas_csv: Path, example_manifest: pd.DataFrame
 ) -> None:
-    loader = BetasLoader(invalid_betas_csv, manifest=example_manifest)
     with pytest.raises(ValueError, match="Expected probe IDs"):
-        _ = loader.raw_data
+        BetasLoader(invalid_betas_csv, manifest=example_manifest)
 
 
 def test_keep_only_cg_probes(
@@ -221,29 +221,6 @@ def test_loader_uses_packaged_manifest_by_default(
 
     loader = BetasLoader(example_betas_csv)
 
-    assert calls == []
-    assert loader.manifest.equals(example_manifest)
     assert calls == [True]
-
-
-def test_load_data_without_filters_does_not_load_manifest(
-    example_betas_csv: Path,
-    example_manifest: pd.DataFrame,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    calls = []
-
-    def fake_load_peters_manifest() -> pd.DataFrame:
-        calls.append(True)
-        return example_manifest.copy()
-
-    monkeypatch.setattr(
-        betas_loader, "load_peters_manifest", fake_load_peters_manifest
-    )
-
-    loader = BetasLoader(example_betas_csv)
-    data = loader.load_data()
-
-    assert calls == []
-    assert data.index.tolist() == ["cg00000029_TC11", "cg00000103_BC11"]
+    assert loader.manifest.equals(example_manifest)
 

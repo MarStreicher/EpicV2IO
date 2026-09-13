@@ -10,7 +10,7 @@ from epicv2io import betas_analyzer
 def test_init_exits_with_error_when_betas_file_is_missing(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    missing_path = tmp_path / "missing.txt"
+    missing_path = tmp_path / "missing.tsv"
 
     with pytest.raises(SystemExit) as exc_info:
         BetasAnalyzer(missing_path)
@@ -20,17 +20,18 @@ def test_init_exits_with_error_when_betas_file_is_missing(
 
 
 @pytest.mark.parametrize(
-    ("name", "content"),
+    "content",
     [
-        ("betas.txt", "IlmnID\tSample_A\tSample_B\ncg1\t0.1\t0.2\n"),
-        ("betas.csv", "IlmnID,Sample_A,Sample_B\ncg1,0.1,0.2\n"),
+        "IlmnID\tSample_A\tSample_B\ncg1\t0.1\t0.2\n",
+        "IlmnID;Sample_A;Sample_B\ncg1;0.1;0.2\n",
+        "IlmnID,Sample_A,Sample_B\ncg1,0.1,0.2\n",
     ],
-    ids=["tab_txt", "comma_csv"],
+    ids=["tab", "semicolon", "comma"],
 )
-def test_get_header_and_sample_count_uses_extension_delimiter(
-    tmp_path: Path, name: str, content: str
+def test_get_header_and_sample_count_infers_delimiter(
+    tmp_path: Path, content: str
 ) -> None:
-    path = tmp_path / name
+    path = tmp_path / "betas.txt"
     path.write_text(content)
 
     assert BetasAnalyzer(path).get_header_and_sample_count() == (
@@ -42,7 +43,7 @@ def test_get_header_and_sample_count_uses_extension_delimiter(
 def test_load_manifest_requests_only_needed_columns(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    path = tmp_path / "betas.txt"
+    path = tmp_path / "betas.tsv"
     path.write_text("IlmnID\n")
     source = pd.DataFrame({"IlmnID": [1], "CHR": [2]})
     observed = {}
@@ -66,7 +67,7 @@ def test_summarise_reports_probe_and_chromosome_counts(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    path = tmp_path / "betas.txt"
+    path = tmp_path / "betas.tsv"
     path.write_text(
         "IlmnID\tSample_A\tSample_B\n"
         " cg1 \t0.1\t0.2\n"
@@ -104,7 +105,7 @@ def test_summarise_handles_file_with_no_probe_rows(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    path = tmp_path / "empty.txt"
+    path = tmp_path / "empty.tsv"
     path.write_text("IlmnID\tSample_A\n")
     analyzer = BetasAnalyzer(path)
     monkeypatch.setattr(

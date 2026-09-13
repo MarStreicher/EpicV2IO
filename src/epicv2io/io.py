@@ -2,26 +2,12 @@
 
 from __future__ import annotations
 
+import csv
 from pathlib import Path
 
-_SEPARATOR_BY_SUFFIX = {
-    ".csv": ",",
-    ".txt": "\t",
-}
 
-
-def infer_separator(path: Path) -> str:
-    """Return the delimiter implied by the betas file extension.
-
-    - ``.csv`` → comma (``,``)
-    - ``.txt`` → tab (``\\t``)
-    """
-    suffix = path.suffix.lower()
-    try:
-        return _SEPARATOR_BY_SUFFIX[suffix]
-    except KeyError as exc:
-        supported = ", ".join(sorted(_SEPARATOR_BY_SUFFIX))
-        raise ValueError(
-            f"Unsupported betas file extension {suffix!r} for {path}; "
-            f"expected one of: {supported}"
-        ) from exc
+def infer_separator(path: Path, sample_bytes: int = 64_384) -> str:
+    """Infer a comma, tab, or semicolon delimiter from a text file."""
+    with path.open("r", encoding="utf-8", errors="replace") as f:
+        sample = f.read(sample_bytes)
+    return csv.Sniffer().sniff(sample, delimiters=",\t;").delimiter

@@ -6,7 +6,7 @@ import pytest
 
 @pytest.fixture
 def example_betas_csv(tmp_path: Path) -> Path:
-    """Create a small comma-delimited beta CSV for one test run."""
+    """Create a small semicolon-delimited beta file for one test run."""
     betas = pd.DataFrame(
         {
             "Sample_A": [0.10, 0.20, 0.30, 0.40],
@@ -24,13 +24,13 @@ def example_betas_csv(tmp_path: Path) -> Path:
         ),
     )
     path = tmp_path / "example_betas.csv"
-    betas.to_csv(path, sep=",", index_label="IlmnID")
+    betas.to_csv(path, sep=";", index_label="IlmnID")
     return path
 
 
 @pytest.fixture
 def invalid_betas_csv(tmp_path: Path) -> Path:
-    """Create a small invalid comma-delimited beta CSV for one test run."""
+    """Create a small invalid semicolon-delimited beta file for one test run."""
     betas = pd.DataFrame(
         {
             "Sample_A": [0.10, 0.20, 0.30, 0.40],
@@ -48,7 +48,7 @@ def invalid_betas_csv(tmp_path: Path) -> Path:
         ),
     )
     path = tmp_path / "example_betas.csv"
-    betas.to_csv(path, sep=",", index_label="IlmnID")
+    betas.to_csv(path, sep=";", index_label="IlmnID")
     return path
 
 

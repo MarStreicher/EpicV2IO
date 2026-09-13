@@ -12,11 +12,11 @@ EpicV2IO loads beta files, retains cg probes, optionally applies QC exclusions f
 
 ## Features
 
-- Load EPICv2 beta matrices (`.csv` = comma-delimited, `.txt` = tab-delimited)
+- Load EPICv2 beta matrices (CSV / TSV / semicolon-delimited; delimiter inferred)
 - Ship a compact Peters et al. EPICv2 manifest as Parquet
 - Optional QC exclusions via manifest flags (mismatch / missing position, cross-hybridisation, sex / mitochondrial chromosomes)
 - Parse EPICv2 `cg…_…` probe identifiers into site, design, and replicate components
-- Summarise probe-type and chromosome composition of a betas file
+- Summarise probe-type and chromosome composition of a betas file (delimiter auto-detected)
 
 ---
 
@@ -123,7 +123,7 @@ Read a beta-value matrix, keep **cg** probes only, drop annotation / control col
 - Rows: probe IDs (`IlmnID`), including at least some IDs starting with `cg`
 - Columns: samples (plus optional annotation columns such as `CHR`, which are dropped)
 - Values: beta values in \[0, 1\]
-- Delimiter: from file extension (`.csv` → comma, `.txt` → tab)
+- Delimiter: comma, tab, or semicolon (auto-detected)
 
 ### Example
 
@@ -269,7 +269,7 @@ print(CgProbeId.parse("rs12345678"))  # None
 
 Quick inventory of a betas file: sample/column counts, probe-type mix from ID prefixes (`cg`, `ch`, `rs`, `nv`, `control`), and chromosome distribution via the Peters manifest. Useful before a full load.
 
-Delimiter handling matches `BetasLoader`: `.csv` files are comma-delimited and `.txt` files are tab-delimited (`epicv2io.io.infer_separator`).
+Delimiter handling matches `BetasLoader`: comma, tab, or semicolon are auto-detected via `epicv2io.io.infer_separator`.
 
 ### Example
 
