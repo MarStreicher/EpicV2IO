@@ -52,27 +52,46 @@ class BetasLoader:
 
     def __init__(self, path: Path, manifest: Optional[pd.DataFrame] = None) -> None:
         self.path_betas = path
-
-        sep = infer_separator(self.path_betas)
-        self.raw_data = pd.read_csv(
-            self.path_betas, sep=sep, low_memory=False, index_col=0
-        )
-        if not self.raw_data.index.astype(str).str.startswith("cg").any():
-            raise ValueError(
-                f"Expected probe IDs in index, got: {self.raw_data.index[:5].tolist()}"
-            )
-
-        self.raw_data.index = self.raw_data.index.astype(str)
-        self.raw_data.index.name = "IlmnID"
-
-        self.manifest = load_peters_manifest() if manifest is None else manifest.copy()
-        self.manifest["IlmnID"] = self.manifest["IlmnID"].astype(str)
+        self._manifest_override = manifest
+        self._raw_data: Optional[pd.DataFrame] = None
+        self._manifest: Optional[pd.DataFrame] = None
 
         self.valid_data = pd.DataFrame()
 
         self.load_candidate_cg_count: int = 0
         self.load_exclusion_counts_by_rule: Dict[str, int] = {}
         self.load_exclusion_union_count: int = 0
+
+    def _load_raw_data(self) -> pd.DataFrame:
+        sep = infer_separator(self.path_betas)
+        raw_data = pd.read_csv(self.path_betas, sep=sep, low_memory=False, index_col=0)
+        if not raw_data.index.astype(str).str.startswith("cg").any():
+            raise ValueError(
+                f"Expected probe IDs in index, got: {raw_data.index[:5].tolist()}"
+            )
+        raw_data.index = raw_data.index.astype(str)
+        raw_data.index.name = "IlmnID"
+        return raw_data
+
+    def _load_manifest(self) -> pd.DataFrame:
+        if self._manifest_override is None:
+            manifest = load_peters_manifest()
+        else:
+            manifest = self._manifest_override.copy()
+        manifest["IlmnID"] = manifest["IlmnID"].astype(str)
+        return manifest
+
+    @property
+    def raw_data(self) -> pd.DataFrame:
+        if self._raw_data is None:
+            self._raw_data = self._load_raw_data()
+        return self._raw_data
+
+    @property
+    def manifest(self) -> pd.DataFrame:
+        if self._manifest is None:
+            self._manifest = self._load_manifest()
+        return self._manifest
 
     @staticmethod
     def _truthy_manifest_mask(values: pd.Series) -> pd.Series:
