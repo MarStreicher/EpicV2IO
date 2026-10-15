@@ -1,6 +1,4 @@
-<p align="right">
-  <img src="https://raw.githubusercontent.com/MarStreicher/EpicV2IO/main/assets/epicv2io_logo.png" alt="epicv2io logo" width="250">
-</p>
+![epicv2io logo](https://raw.githubusercontent.com/MarStreicher/EpicV2IO/main/assets/epicv2io_logo.png)
 
 # EpicV2IO
 
@@ -9,6 +7,8 @@ I/O library for Illumina MethylationEPIC v2 (EPICv2) beta arrays.
 EpicV2IO loads beta files, retains cg probes, optionally applies QC exclusions from the shipped Peters et al. probe annotation manifest, and provides helpers for probe-ID parsing and file summaries. It is designed as a lightweight dependency for analysis packages (for example [betaSieve](https://github.com/MarStreicher/betaSieve)) and for ML or custom workflows that need clean EPICv2 matrices.
 
 ---
+
+
 
 ## Features
 
@@ -20,35 +20,6 @@ EpicV2IO loads beta files, retains cg probes, optionally applies QC exclusions f
 
 ---
 
-## Installation
-
-### From PyPI
-
-```bash
-pip install epicv2io
-```
-
-### From GitHub
-
-```bash
-pip install git+https://github.com/MarStreicher/EpicV2IO.git
-```
-
-### Conda environment
-
-```bash
-conda env create -f environment.yml
-conda activate env_epicv2io
-```
-
-### Requirements
-
-- Python ≥ 3.9
-- pandas ≥ 1.5
-- pyarrow ≥ 10
-- openpyxl
-
-Dependencies are installed automatically with `pip`.
 
 
 ## Data and Annotation Resources
@@ -58,61 +29,52 @@ manifest from Peters et al. (2024). Only the columns required for QC filtering
 and annotation are retained (see table below). This is an adaptation of
 third-party open materials, not original EpicV2IO content.
 
-| Column               | Role                                                                 |
-| -------------------- | -------------------------------------------------------------------- |
-| `IlmnID`           | Probe identifier (join key with betas index)                         |
+
+| Column             | Role                                                     |
+| ------------------ | -------------------------------------------------------- |
+| `IlmnID`           | Probe identifier (join key with betas index)             |
 | `CHR`              | Chromosome (`chr1` … `chr22`, `chrX`, `chrY`, `chrM`, …) |
-| `MismatchPos`      | Illumina vs SeSAMe location discrepancy flag                         |
-| `MissingPos`       | Missing / unresolved genomic position flag                           |
-| `CH_BLAT`          | Cross-hybridisation evidence (BLAT)                                  |
-| `CH_WGBS_evidence` | Cross-hybridisation evidence (WGBS)                                  |
+| `MismatchPos`      | Illumina vs SeSAMe location discrepancy flag             |
+| `MissingPos`       | Missing / unresolved genomic position flag               |
+| `CH_BLAT`          | Cross-hybridisation evidence (BLAT)                      |
+| `CH_WGBS_evidence` | Cross-hybridisation evidence (WGBS)                      |
+
 
 **Provenance**
 
 - Paper (CC BY 4.0): Peters et al., *BMC Genomics* (2024) 25:251 —  
-  https://doi.org/10.1186/s12864-024-10027-5  
+[https://doi.org/10.1186/s12864-024-10027-5](https://doi.org/10.1186/s12864-024-10027-5)  
 - Supplementary CSV: **Additional file 4** of that article  
-- Bioconductor: [`EPICv2manifest`](https://bioconductor.org/packages/release/data/annotation/html/EPICv2manifest.html) / AnnotationHub **AH116484** (Artistic-2.0)
+- Bioconductor: `[EPICv2manifest](https://bioconductor.org/packages/release/data/annotation/html/EPICv2manifest.html)` / AnnotationHub **AH116484** (Artistic-2.0)
 
 The rebuild script is `scripts/build_peters_manifest_parquet.R`. Full attribution
-text is in [`NOTICE`](NOTICE) and `src/epicv2io/resources/README.md`.
+text is in `[NOTICE](NOTICE)` and `src/epicv2io/resources/README.md`.
 
 ### Purpose
 
 Provide a small, versioned annotation table that travels with the package so loaders and downstream tools do not need a separate Bioconductor / AnnotationHub download at runtime.
 
-### Example
+---
 
-```python
-from epicv2io.manifest import load_peters_manifest, MANIFEST_COLUMNS
 
-manifest = load_peters_manifest()
-print(manifest.shape)
-print(list(manifest.columns))
-print(manifest.head(3))
-```
 
-Example result:
+## Installation
 
-```text
-(937690, 6)
-['IlmnID', 'CHR', 'MismatchPos', 'MissingPos', 'CH_BLAT', 'CH_WGBS_evidence']
 
-            IlmnID   CHR MismatchPos MissingPos CH_BLAT CH_WGBS_evidence
-0  cg00000029_TC11  chr16           N          N       N                N
-1  cg00000109_TC21   chr3           N          N       N                N
-2  cg00000155_BC11  chr12           N          N       N                N
-```
 
-Subset columns if you only need chromosome mapping:
+### From PyPI
 
-```python
-chr_map = load_peters_manifest(columns=["IlmnID", "CHR"])
+```bash
+pip install epicv2io
 ```
 
 ---
 
+
+
 ## Quick Start — `BetasLoader`
+
+
 
 ### Purpose
 
@@ -122,23 +84,63 @@ Read a beta-value matrix, keep **cg** probes only, drop annotation / control col
 
 - Rows: probe IDs (`IlmnID`), including at least some IDs starting with `cg`
 - Columns: samples (plus optional annotation columns such as `CHR`, which are dropped)
-- Values: beta values in \[0, 1\]
+- Values: beta values in 0, 1
 - Delimiter: from file extension (`.csv` → comma, `.txt` → tab)
 
+
+
 ### Example
+
+A runnable script is in `[example/usage_epicv2-io.py](example/usage_epicv2-io.py)`. Set `BETAS_PATH` in a `.env` file at the repo root.
+
+```python
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+from epicv2io import BetasLoader
+
+ROOT = Path(__file__).resolve().parent.parent
+if not load_dotenv(ROOT / ".env"):
+    raise FileNotFoundError(
+        "Missing .env. Copy .env.example to .env and set the local paths."
+    )
+
+betas_path = Path(os.environ["BETAS_PATH"])
+loader = BetasLoader(betas_path)
+
+# probes × samples (cg only)
+betas = loader.load_data()
+print(betas.shape)
+print(betas.iloc[:3, :3])
+```
+
+Example matrix result (`load_data`):
+
+```text
+                 Sample_A  Sample_B  Sample_C
+IlmnID
+cg00000029_TC11      0.12      0.15      0.11
+cg00000109_TC21      0.88      0.91      0.87
+cg00000155_BC11      0.45      0.44      0.48
+```
+
+Without a `.env` file, pass the path directly:
 
 ```python
 from pathlib import Path
 from epicv2io import BetasLoader
 
 loader = BetasLoader(Path("betas.csv"))
-
-# probes × samples (cg only; no QC flags)
 betas = loader.load_data()
-print(betas.shape)
-print(betas.iloc[:3, :3])
+```
 
-# samples × probes
+
+
+### Filtered load and wide format
+
+```python
+# samples × probes, with QC flags enabled
 betas_wide = loader.load_data_wide(
     exclude_mismatch_pos=True,
     exclude_missing_pos=True,
@@ -166,16 +168,6 @@ Candidate cg CpGs (betas ∩ manifest, cg rows): 850,000
 (821500, 48)
 ```
 
-Example matrix result (`load_data`):
-
-```text
-                 Sample_A  Sample_B  Sample_C
-IlmnID
-cg00000029_TC11      0.12      0.15      0.11
-cg00000109_TC21      0.88      0.91      0.87
-cg00000155_BC11      0.45      0.44      0.48
-```
-
 Example wide result (`load_data_wide`):
 
 ```text
@@ -184,6 +176,25 @@ sample_id
 Sample_A              0.12             0.88             0.45
 Sample_B              0.15             0.91             0.44
 ```
+
+
+
+### Exclusion flags
+
+All default to `False`. Truthy manifest values are `Y`, `TRUE`, and `1` (case-insensitive).
+
+
+| Argument                   | Manifest column / rule   |
+| -------------------------- | ------------------------ |
+| `exclude_mismatch_pos`     | `MismatchPos`            |
+| `exclude_missing_pos`      | `MissingPos`             |
+| `exclude_ch_blat`          | `CH_BLAT`                |
+| `exclude_ch_wgbs_evidence` | `CH_WGBS_evidence`       |
+| `exclude_sex_chromosomes`  | `CHR` in `chrX` / `chrY` |
+| `exclude_mitochondrial`    | `CHR` == `chrM`          |
+
+
+When any exclusion flag is enabled, at least one probe ID must overlap the shipped manifest (`IlmnID`); otherwise a `ValueError` is raised.
 
 After loading, exclusion statistics are available on the loader:
 
@@ -200,70 +211,13 @@ missing = loader.get_manifest_cpgs_missing_in_betas()
 print(len(missing), missing[:5])
 ```
 
-### Exclusion flags
-
-All default to `False`. Truthy manifest values are `Y`, `TRUE`, and `1` (case-insensitive).
-
-| Argument                     | Manifest column / rule         |
-| ---------------------------- | ------------------------------ |
-| `exclude_mismatch_pos`     | `MismatchPos`                |
-| `exclude_missing_pos`      | `MissingPos`                 |
-| `exclude_ch_blat`          | `CH_BLAT`                    |
-| `exclude_ch_wgbs_evidence` | `CH_WGBS_evidence`           |
-| `exclude_sex_chromosomes`  | `CHR` in `chrX` / `chrY` |
-| `exclude_mitochondrial`    | `CHR` == `chrM`            |
-
-When any exclusion flag is enabled, at least one probe ID must overlap the shipped manifest (`IlmnID`); otherwise a `ValueError` is raised.
-
 ---
 
-## `CgProbeId`
 
-### Purpose
-
-Parse EPICv2 cg probe names of the form `cgDDDD_XXXX` into components used for duplicate grouping (same site / same design / replicate suffix).
-
-Pattern: `^cg(\d+)_([TB][CO][12])(\d+)$`
-
-| Component        | Meaning                                   | Example (`cg00000029_TC11`) |
-| ---------------- | ----------------------------------------- | ----------------------------- |
-| `site_id`      | CpG site                                  | `cg00000029`                |
-| `design_type`  | Design block`[TB][CO][12]`              | `TC1`                       |
-| `design_id`    | Site + design (exact-duplicate group key) | `cg00000029_TC1`            |
-| `replicate_id` | Numeric replicate suffix                  | `1`                         |
-
-### Example
-
-```python
-from epicv2io import CgProbeId
-
-probe = "cg00000029_TC11"
-print(CgProbeId.parse(probe))
-print(CgProbeId.site_id(probe))
-print(CgProbeId.design_id(probe))
-print(CgProbeId.design_type(probe))
-print(CgProbeId.replicate_id(probe))
-```
-
-Example result:
-
-```text
-('cg00000029', 'cg00000029_TC1', 'TC1', '1')
-cg00000029
-cg00000029_TC1
-TC1
-1
-```
-
-Non-matching IDs return `None`:
-
-```python
-print(CgProbeId.parse("rs12345678"))  # None
-```
-
----
 
 ## `BetasAnalyzer`
+
+
 
 ### Purpose
 
@@ -319,6 +273,97 @@ Distribution of autosomal vs sex chromosomes (from manifest):
 
 ---
 
+
+
+## `CgProbeId`
+
+
+
+### Purpose
+
+Parse EPICv2 cg probe names of the form `cgDDDD_XXXX` into components used for duplicate grouping (same site / same design / replicate suffix).
+
+Pattern: `^cg(\d+)_([TB][CO][12])(\d+)$`
+
+
+| Component      | Meaning                                   | Example (`cg00000029_TC11`) |
+| -------------- | ----------------------------------------- | --------------------------- |
+| `site_id`      | CpG site                                  | `cg00000029`                |
+| `design_type`  | Design block`[TB][CO][12]`                | `TC1`                       |
+| `design_id`    | Site + design (exact-duplicate group key) | `cg00000029_TC1`            |
+| `replicate_id` | Numeric replicate suffix                  | `1`                         |
+
+
+
+
+### Example
+
+```python
+from epicv2io import CgProbeId
+
+probe = "cg00000029_TC11"
+print(CgProbeId.parse(probe))
+print(CgProbeId.site_id(probe))
+print(CgProbeId.design_id(probe))
+print(CgProbeId.design_type(probe))
+print(CgProbeId.replicate_id(probe))
+```
+
+Example result:
+
+```text
+('cg00000029', 'cg00000029_TC1', 'TC1', '1')
+cg00000029
+cg00000029_TC1
+TC1
+1
+```
+
+Non-matching IDs return `None`:
+
+```python
+print(CgProbeId.parse("rs12345678"))  # None
+```
+
+---
+
+
+
+## `load_peters_manifest`
+
+Load the shipped Peters et al. annotation table (see [Data and Annotation Resources](#data-and-annotation-resources)).
+
+```python
+from epicv2io.manifest import load_peters_manifest
+
+manifest = load_peters_manifest()
+print(manifest.shape)
+print(list(manifest.columns))
+print(manifest.head(3))
+```
+
+Example result:
+
+```text
+(937690, 6)
+['IlmnID', 'CHR', 'MismatchPos', 'MissingPos', 'CH_BLAT', 'CH_WGBS_evidence']
+
+            IlmnID   CHR MismatchPos MissingPos CH_BLAT CH_WGBS_evidence
+0  cg00000029_TC11  chr16           N          N       N                N
+1  cg00000109_TC21   chr3           N          N       N                N
+2  cg00000155_BC11  chr12           N          N       N                N
+```
+
+Subset columns if you only need chromosome mapping:
+
+```python
+chr_map = load_peters_manifest(columns=["IlmnID", "CHR"])
+```
+
+---
+
+
+
 ## Citation
 
 If you use EpicV2IO in published work, please cite:
@@ -327,7 +372,7 @@ If you use EpicV2IO in published work, please cite:
 
 If you use the shipped probe annotation (or any analysis that relies on it), please cite the Peters et al. EPICv2 manifest paper (CC BY 4.0):
 
-> Peters TJ, Meyer B, Ryan L, Achinger-Kawecka J, Song J, Campbell EM, Qu W, Nair S, Loi-Luu P, Stricker P, Lim E, Stirzaker C, Clark SJ, Pidsley R. Characterisation and reproducibility of the HumanMethylationEPIC v2.0 BeadChip for DNA methylation profiling. *BMC Genomics*. 2024;25:251. https://doi.org/10.1186/s12864-024-10027-5
+> Peters TJ, Meyer B, Ryan L, Achinger-Kawecka J, Song J, Campbell EM, Qu W, Nair S, Loi-Luu P, Stricker P, Lim E, Stirzaker C, Clark SJ, Pidsley R. Characterisation and reproducibility of the HumanMethylationEPIC v2.0 BeadChip for DNA methylation profiling. *BMC Genomics*. 2024;25:251. [https://doi.org/10.1186/s12864-024-10027-5](https://doi.org/10.1186/s12864-024-10027-5)
 
 Optionally also acknowledge the Bioconductor distribution used to build the Parquet subset:
 
@@ -335,8 +380,10 @@ Optionally also acknowledge the Bioconductor distribution used to build the Parq
 
 ---
 
+
+
 ## License
 
-BSD 3-Clause License (see [`LICENSE`](LICENSE)) covers **this software only**.
+BSD 3-Clause License (see `[LICENSE](LICENSE)`) covers **this software only**.
 
-The packaged Peters et al. manifest subset is third-party open material under the article’s **CC BY 4.0** terms (and, for the AnnotationHub build path, Bioconductor **Artistic-2.0**). Attribution requirements for that data are described in [`NOTICE`](NOTICE); they are separate from the EpicV2IO software licence.
+The packaged Peters et al. manifest subset is third-party open material under the article’s **CC BY 4.0** terms (and, for the AnnotationHub build path, Bioconductor **Artistic-2.0**). Attribution requirements for that data are described in `[NOTICE](NOTICE)`; they are separate from the EpicV2IO software licence.
