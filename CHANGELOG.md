@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 
+## [Unreleased]
+
+### Changed
+- Split `BetasLoader` into I/O helpers (`io.py`) and Peters QC exclusions (`exclusions.py`); public loader API is unchanged
+
 ## [1.0.0] - 2026-07-17
 
 ### Added
