@@ -7,7 +7,7 @@ from epicv2io.io import (
     filter_cg_rows,
     infer_separator,
     keep_sample_columns,
-    to_samples_by_features,
+    probes_to_samples,
 )
 
 
@@ -53,7 +53,7 @@ def test_keep_sample_columns_drops_annotation_and_controls() -> None:
 def test_to_samples_by_features_sets_axis_names() -> None:
     frame = pd.DataFrame({"Sample_A": [0.1]}, index=pd.Index(["cg1"], name="IlmnID"))
 
-    wide = to_samples_by_features(frame)
+    wide = probes_to_samples(frame)
 
     assert wide.index.tolist() == ["Sample_A"]
     assert wide.columns.tolist() == ["cg1"]
