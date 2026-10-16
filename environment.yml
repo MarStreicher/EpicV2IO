@@ -12,5 +12,6 @@ dependencies:
   - pytest-cov>=4
   - black
   - ruff
+  - python-dotenv
   - pip:
       - -e .

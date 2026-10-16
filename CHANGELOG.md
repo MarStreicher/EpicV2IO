@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 
+## [Unreleased]
+
+### Changed
+- Split `BetasLoader` into I/O helpers (`io.py`) and Peters QC exclusions (`exclusions.py`); public loader API is unchanged
+- README now leads with loading (`example/usage_epicv2-io.py`); manifest usage is documented last
+- Releases are tag-driven (`v*.*.*` → `release.yml`); the package version is taken from the git tag (setuptools-scm) 
+
 ## [1.0.0] - 2026-07-17
 
 ### Added
