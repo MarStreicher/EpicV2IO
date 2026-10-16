@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=77.0.3", "wheel"]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "epicv2-io"
-version = "1.0.2"
+dynamic = ["version"]
 description = "EPICv2 beta value loader and manifest utilities."
 readme = "README.md"
 requires-python = ">=3.9"
