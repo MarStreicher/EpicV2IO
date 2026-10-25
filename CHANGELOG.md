@@ -40,10 +40,15 @@ All notable changes to this project will be documented in this file.
 - Delimiter is taken from the file extension (`.csv` → comma, `.txt` → tab); content sniffing and semicolon support removed
 - `BetasLoader` loads betas and the Peters manifest lazily (only when needed)
 
-## [1.0.3]
+## [1.0.3] - 2026-10-25
 
 ### Changed
 - Split `BetasLoader` into I/O helpers (`io.py`) and Peters QC exclusions (`exclusions.py`); public loader API is unchanged
 - README now leads with loading (`example/usage_epicv2-io.py`); manifest usage is documented last
 - Releases are tag-driven (`v*.*.*` → `release.yml`); the package version is taken from the git tag (setuptools-scm) 
+
+## [1.0.4] - 2026-10-25
+
+### Changed
+-  Hotfix: Fix PyPI publish workflow and README
 
