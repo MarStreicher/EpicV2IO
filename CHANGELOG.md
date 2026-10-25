@@ -52,3 +52,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 -  Hotfix: Fix PyPI publish workflow and README
 
+## [1.0.5] - 2026-10-25
+
+### Changed
+-  Hotfix: Fix setuptools-scm version detection
+
