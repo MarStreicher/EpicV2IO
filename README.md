@@ -1,4 +1,7 @@
-![epicv2io logo](https://raw.githubusercontent.com/MarStreicher/EpicV2IO/main/assets/epicv2io_logo.png)
+<p align="right">
+  <img src="https://raw.githubusercontent.com/MarStreicher/EpicV2IO/main/assets/epicv2io_logo.png" alt="EpeicV2IO logo" width="250">
+</p>
+
 
 # EpicV2IO
 
