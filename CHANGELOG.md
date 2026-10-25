@@ -47,3 +47,8 @@ All notable changes to this project will be documented in this file.
 - README now leads with loading (`example/usage_epicv2-io.py`); manifest usage is documented last
 - Releases are tag-driven (`v*.*.*` → `release.yml`); the package version is taken from the git tag (setuptools-scm) 
 
+## [1.0.4]
+
+### Changed
+-  Hotfix: Fix PyPI publish workflow and README
+
